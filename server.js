@@ -18,30 +18,43 @@ const TYPES = {
   ".webp": "image/webp",
 };
 // Only these files/folders are public, so server.js, package.json etc. are never served
-const PUBLIC = new Set(["index.html", "terms.html", "privacy.html", "favicon.ico", "assets"]);
+const PUBLIC = new Set(["index.html", "terms.html", "privacy.html", "favicon.svg", "assets"]);
+// Same headers as vercel.json
+const SECURITY = {
+  "X-Content-Type-Options": "nosniff",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "X-Frame-Options": "DENY",
+  "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+};
 
 http.createServer((req, res) => {
-  const urlPath = decodeURIComponent(new URL(req.url, "http://x").pathname);
+  let urlPath;
+  try {
+    urlPath = decodeURIComponent(new URL(req.url, "http://x").pathname);
+  } catch {
+    // Malformed URL (e.g. "/%E0") would otherwise crash the server
+    res.writeHead(400, SECURITY);
+    return res.end();
+  }
   if (urlPath === "/health") return res.end("ok");
 
   let rel = path.normalize(urlPath).replace(/^[\\/]+/, "") || "index.html";
   if (!PUBLIC.has(rel.split(/[\\/]/)[0])) rel = "index.html";
   const file = path.join(ROOT, rel);
-  if (!file.startsWith(ROOT)) { res.writeHead(400); return res.end(); }
+  if (!file.startsWith(ROOT)) { res.writeHead(400, SECURITY); return res.end(); }
 
   fs.readFile(file, (err, data) => {
     if (err) {
       // Unknown paths fall back to the apply page
       return fs.readFile(path.join(ROOT, "index.html"), (e, html) => {
-        res.writeHead(e ? 500 : 200, { "Content-Type": TYPES[".html"] });
+        res.writeHead(e ? 500 : 200, { ...SECURITY, "Content-Type": TYPES[".html"], "Cache-Control": "no-cache" });
         res.end(html);
       });
     }
     res.writeHead(200, {
+      ...SECURITY,
       "Content-Type": TYPES[path.extname(file).toLowerCase()] || "application/octet-stream",
-      "Cache-Control": rel === "index.html" ? "no-cache" : "public, max-age=86400",
-      "X-Content-Type-Options": "nosniff",
-      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Cache-Control": rel.endsWith(".html") ? "no-cache" : "public, max-age=86400",
     });
     res.end(data);
   });
