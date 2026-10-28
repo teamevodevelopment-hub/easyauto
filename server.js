@@ -2,6 +2,7 @@
 const http = require("http");
 const fs = require("fs");
 const path = require("path");
+const lead = require("./api/lead");
 
 const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;
@@ -37,6 +38,10 @@ http.createServer((req, res) => {
     return res.end();
   }
   if (urlPath === "/health") return res.end("ok");
+  if (urlPath === "/api/lead") {
+    Object.entries(SECURITY).forEach(([k, v]) => res.setHeader(k, v));
+    return lead(req, res).catch((err) => { console.error(err); if (!res.headersSent) { res.statusCode = 500; res.end(); } });
+  }
 
   let rel = path.normalize(urlPath).replace(/^[\\/]+/, "") || "index.html";
   if (!PUBLIC.has(rel.split(/[\\/]/)[0])) rel = "index.html";

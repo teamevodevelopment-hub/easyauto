@@ -4,7 +4,8 @@
     { "src": "terms.html", "use": "@vercel/static" },
     { "src": "privacy.html", "use": "@vercel/static" },
     { "src": "favicon.svg", "use": "@vercel/static" },
-    { "src": "assets/**", "use": "@vercel/static" }
+    { "src": "assets/**", "use": "@vercel/static" },
+    { "src": "api/lead.js", "use": "@vercel/node" }
   ],
   "routes": [
     {
@@ -17,6 +18,7 @@
       },
       "continue": true
     },
+    { "src": "/api/lead", "dest": "/api/lead.js" },
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]

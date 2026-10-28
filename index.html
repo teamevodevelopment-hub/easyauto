@@ -158,6 +158,7 @@
 
   /* Option tiles */
   .options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
   .option { position: relative; }
   .option input { position: absolute; opacity: 0; pointer-events: none; }
   .option label {
@@ -384,6 +385,8 @@
 
     <main class="card" id="apply">
       <form id="applyForm" novalidate autocomplete="on">
+        <!-- Spam trap: hidden from people, bots fill it in and api/lead.js drops the submission -->
+        <div class="hp" aria-hidden="true"><label for="website">Website</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
         <div class="progress" id="progress">
           <div class="progress-meta" aria-live="polite"><span id="stepLabel">Step 1 of 4</span><span id="stepPct">0%</span></div>
           <div class="bar"><div class="bar-fill" id="barFill"></div></div>
@@ -652,9 +655,10 @@
 
 <script>
   // ===== CONFIG =====
-  // Where leads are sent (Formspree, Zapier/Make webhook, Google Apps Script URL, your CRM).
+  // Where leads are sent. /api/lead (api/lead.js) forwards them to the CRM webhook set in
+  // the LEAD_WEBHOOK_URL environment variable, so the webhook URL never appears in this page.
   // Leave empty to test locally: submissions are saved to this browser's localStorage.
-  const FORM_ENDPOINT = "";
+  const FORM_ENDPOINT = "/api/lead";
   // Google Maps Platform key with "Places API (New)" + "Maps JavaScript API" enabled.
   // Restrict it to your domain (HTTP referrers) in Google Cloud Console.
   // Leave empty and the address field works as a normal text box.
@@ -851,6 +855,7 @@
     data.monthlyIncome = (data.monthlyIncome || "").replace(/\D/g, "");
     data.submittedAt = new Date().toISOString();
     data.pageUrl = location.href;
+    data.referrer = document.referrer;
     // Ad attribution params (utm_*, gclid, fbclid, etc.)
     new URLSearchParams(location.search).forEach((v, k) => { data[k] = v; });
 
