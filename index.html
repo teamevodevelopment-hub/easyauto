@@ -9,10 +9,11 @@
 <meta property="og:description" content="Good credit, bad credit, no credit. Apply in 2 minutes and drive away sooner.">
 <style>
   :root {
-    --brand: #0b63f6;
-    --brand-dark: #0847b3;
+    /* Brand colours sampled from assets/logo.jpg */
+    --brand: #124a92;
+    --brand-dark: #04172d;
     --accent: #ffb703;
-    --ink: #0f172a;
+    --ink: #04172d;
     --muted: #64748b;
     --line: #e2e8f0;
     --bg: #f5f8ff;
@@ -33,13 +34,13 @@
   header {
     background: #fff;
     border-bottom: 1px solid var(--line);
-    padding: 14px 20px;
+    padding: 10px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
-  .logo { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; }
-  .logo span { color: var(--brand); }
+  .logo img { display: block; height: 56px; width: auto; }
+  @media (max-width: 480px) { .logo img { height: 44px; } }
   .secure { font-size: .8rem; color: var(--muted); display: flex; align-items: center; gap: 6px; }
 
   /* Hero */
@@ -178,7 +179,7 @@
 <body>
 
 <header>
-  <div class="logo">Easy<span>Auto</span></div>
+  <a class="logo" href="/"><img src="assets/logo.jpg" alt="EasyAuto: Car Financing, Car Dealer" width="540" height="203"></a>
   <div class="secure">🔒 Secure &amp; Confidential</div>
 </header>
 
@@ -421,7 +422,7 @@
   // Google Maps Platform key with "Places API (New)" + "Maps JavaScript API" enabled.
   // Restrict it to your domain (HTTP referrers) in Google Cloud Console.
   // Leave empty and the address field works as a normal text box.
-  const GOOGLE_PLACES_API_KEY = "";
+  const GOOGLE_PLACES_API_KEY = "AIzaSyAGdEUMJpi9vKBtnv1KoClnQ1nQlIvpNxI";
   // ==================
 
   const $ = (id) => document.getElementById(id);
