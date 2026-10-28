@@ -18,7 +18,7 @@ const TYPES = {
   ".webp": "image/webp",
 };
 // Only these files/folders are public, so server.js, package.json etc. are never served
-const PUBLIC = new Set(["index.html", "favicon.ico", "assets"]);
+const PUBLIC = new Set(["index.html", "terms.html", "privacy.html", "favicon.ico", "assets"]);
 
 http.createServer((req, res) => {
   const urlPath = decodeURIComponent(new URL(req.url, "http://x").pathname);
